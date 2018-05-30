@@ -66,10 +66,8 @@ class NSSimpleMDEExtension extends \Twig_Extension
      */
     public function simplemdeJs()
     {
-        $config = $this->getParameter('ns_simplemde.config');
-
         return $this->getService('templating')->render('NSSimpleMDEBundle:Init:js.html.twig', [
-            'config' => json_encode($config)
+            'config' => $this->getParameter('ns_simplemde.config')
         ]);
     }
 }

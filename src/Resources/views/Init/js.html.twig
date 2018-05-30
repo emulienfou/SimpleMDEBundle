@@ -4,7 +4,7 @@
   $(function () {
     $('textarea[data-type="simplemde"]').each(function () {
       let element = $("#" + $(this).attr('id'))[0];
-      new SimpleMDE(Object.assign({{ config }}, {'element': element}));
+      new SimpleMDE(Object.assign({{ config|json_encode()|raw }}, {'element': element}));
     });
   });
   {% endspaceless %}

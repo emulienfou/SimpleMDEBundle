@@ -1,0 +1,11 @@
+<script src="//cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+<script type="text/javascript">
+  {% spaceless %}
+  $(function () {
+    $('textarea[data-type="simplemde"]').each(function () {
+      let element = $("#" + $(this).attr('id'))[0];
+      new SimpleMDE(Object.assign({{ config }}, {'element': element}));
+    });
+  });
+  {% endspaceless %}
+</script>

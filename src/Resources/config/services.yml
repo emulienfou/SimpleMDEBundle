@@ -1,0 +1,13 @@
+services:
+    ns_simplemde.form.type:
+        class: NS\SimpleMDEBundle\Form\Types\MarkdownEditorType
+        arguments: ["%ns_simplemde.config%"]
+        tags:
+          - { name: form.type }
+
+    ns_simplemde.twig_extension:
+            class: NS\SimpleMDEBundle\Twig\NSSimpleMDEExtension
+            arguments: ["@service_container"]
+            public: false
+            tags:
+                - { name: twig.extension }

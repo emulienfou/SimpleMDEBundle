@@ -9,6 +9,7 @@
 namespace NS\SimpleMDEBundle\Form\Types;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -16,14 +17,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MarkdownEditorType extends AbstractType
 {
-    /**
-     * Configures the options for this type.
-     *
-     * @param OptionsResolver $resolver The resolver for the options
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setDefined([
+
+    protected $options
+        = [
             'autofocus',
             'autosave',
             'blockStyles',
@@ -44,8 +40,31 @@ class MarkdownEditorType extends AbstractType
             'styleSelectedText',
             'tabSize',
             'toolbar',
-            'toolbarTips',
-        ]);
+            'toolbarTips'
+        ];
+
+    protected $config;
+
+    /**
+     * MarkdownEditorType constructor.
+     *
+     * @param $config
+     */
+    public function __construct($config)
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        foreach ($this->options as $option) {
+            if (isset($options[$option])) {
+                $builder->setAttribute($option, $options[$option]);
+            }
+        }
     }
 
     /**
@@ -53,37 +72,47 @@ class MarkdownEditorType extends AbstractType
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $editor_config = [];
+        foreach ($this->options as $option) {
+            if (isset($options[$option])) {
+                $view->vars[$option] = $options[$option];
+            }
+        }
+    }
 
-        if (isset($options['hideIcons'])) {
-            $editor_config['hideIcons'] = $options['hideIcons'];
+    /**
+     * Configures the options for this type.
+     *
+     * @param OptionsResolver $resolver The resolver for the options
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        if (isset($this->config['hideIcons'])) {
+            $resolver->setDefault('hideIcons', $this->config['hideIcons']);
         }
 
-        if (isset($options['placeholder'])) {
-            $editor_config['placeholder'] = $options['placeholder'];
+        if (isset($this->config['placeholder'])) {
+            $resolver->setDefault('placeholder', $this->config['placeholder']);
         }
 
-        if (isset($options['showIcons'])) {
-            $editor_config['showIcons'] = $options['showIcons'];
+        if (isset($this->config['showIcons'])) {
+            $resolver->setDefault('showIcons', $this->config['showIcons']);
         }
 
-        if (isset($options['tabSize']) && $options['tabSize'] !== 2) {
-            $editor_config['tabSize'] = $options['tabSize'];
+        if (isset($this->config['tabSize']) && $this->config['tabSize'] !== 2) {
+            $resolver->setDefault('tabSize', $this->config['tabSize']);
         }
 
         foreach (['indentWithTabs', 'lineWrapping', 'spellChecker', 'styleSelectedText'] as $defaultTrueOption) {
-            if (isset($options[$defaultTrueOption]) && $options[$defaultTrueOption] === false) {
-                $editor_config[$defaultTrueOption] = false;
+            if (isset($this->config[$defaultTrueOption]) && $this->config[$defaultTrueOption] === false) {
+                $resolver->setDefault($defaultTrueOption, false);
             }
         }
 
         foreach (['autofocus', 'forceSync', 'promptURLs'] as $defaultFalseOption) {
-            if (isset($options[$defaultFalseOption]) && $options[$defaultFalseOption] === true) {
-                $editor_config[$defaultFalseOption] = true;
+            if (isset($this->config[$defaultFalseOption]) && $this->config[$defaultFalseOption] === true) {
+                $resolver->setDefault($defaultFalseOption, true);
             }
         }
-
-        $view->vars['editor_config'] = json_encode($editor_config);
     }
 
     /**

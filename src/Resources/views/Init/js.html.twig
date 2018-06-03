@@ -3,8 +3,8 @@
   {% spaceless %}
   $(function () {
     $('textarea[data-type="simplemde"]').each(function () {
-      let element = $("#" + $(this).attr('id'))[0];
-      new SimpleMDE(Object.assign({{ config|json_encode()|raw }}, {'element': element}));
+      var element = $("#" + $(this).attr('id'))[0];
+      var simplemde = new SimpleMDE(Object.assign({{ config|json_encode()|raw }}, {'element': element}));
     });
   });
   {% endspaceless %}
